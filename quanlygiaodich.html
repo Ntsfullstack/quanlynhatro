@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý Giao dịch</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .status-toggle {
+        cursor: pointer;
+        padding: 5px 10px;
+        border-radius: 5px;
+      }
+      .paid {
+        background-color: #4CAF50;
+        color: white;
+      }
+      .unpaid {
+        background-color: #f44336;
+        color: white;
+      }
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.4);
+      }
+      .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+      }
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+      }
+      .close:hover,
+      .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav>
+      <ul>
+        <li><a href="/">Báo cáo thống kê</a></li>
+        <li><a href="./quanlynguoidung.html">Quản lý Người dùng</a></li>
+        <li><a href="./quanlynhatro.html">Quản lý Nhà trọ</a></li>
+        <li><a href="./quanlygiaodich.html">Quản lý Giao dịch</a></li>
+        <li><a href="./quanlydichvu.html">Quản lý Dịch vụ</a></li>
+        <li><a href="./quanlyhopdong.html">Quản lý Hợp đồng</a></li>
+      </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+      <h1>Quản lý Giao dịch</h1>
+      <button id="addTransactionBtn">Thêm Giao dịch mới</button>
+
+      <!-- Dropdown Tòa nhà -->
+      <select id="buildingSelect" class="building-dropdown">
+        <option value="">Chọn tòa nhà</option>
+        <option value="01">Nhà trọ ABC</option>
+        <option value="02">Nhà trọ XYZ</option>
+      </select>
+
+      <table id="transactionTable">
+        <thead>
+          <tr>
+            <th>Mã GD</th>
+            <th>Phòng</th>
+            <th>Ngày đóng tiền</th>
+            <th>Tổng số tiền</th>
+            <th>Chi tiết</th>
+            <th>Trạng thái</th>
+          </tr>
+        </thead>
+        <tbody id="transactionTableBody">
+          <!-- Data will be populated by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Modal Popup for Adding New Transaction -->
+    <div id="transactionModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Thêm Giao dịch mới</h2>
+
+        <form id="transactionForm">
+          <label for="transactionBuilding">Tòa nhà:</label>
+          <select id="transactionBuilding" name="transactionBuilding" required>
+            <option value="">Chọn tòa nhà</option>
+            <option value="01">Nhà trọ ABC</option>
+            <option value="02">Nhà trọ XYZ</option>
+          </select>
+
+          <label for="customerName">Tên Người Thuê:</label>
+          <input type="text" id="customerName" name="customerName" required />
+
+          <label for="transactionDate">Ngày Giao dịch:</label>
+          <input type="date" id="transactionDate" name="transactionDate" required />
+
+          <label for="totalAmount">Tổng số tiền:</label>
+          <input readonly type="number" id="totalAmount" name="totalAmount" />
+
+          <h3>Chi tiết Dịch vụ</h3>
+          <div id="services">
+            <div class="service">
+              <label for="serviceName">Tên Dịch vụ:</label>
+              <select name="serviceName" class="serviceSelect" onchange="updateServiceDetails(this)" required>
+                <option value="Tiền phòng" data-type="fixed">Tiền phòng (Cố định)</option>
+                <option value="Tiền điện" data-type="metered">Tiền điện (Tính theo số)</option>
+                <option value="Tiền nước" data-type="metered">Tiền nước (Tính theo số)</option>
+                <option value="Internet" data-type="fixed">Internet (Cố định)</option>
+              </select>
+
+              <!-- Fields for Fixed Service -->
+              <div class="fixedServiceFields">
+                <label for="unitPriceFixed">Đơn giá:</label>
+                <input type="number" class="unitPriceFixed" name="unitPriceFixed" readonly />
+              </div>
+
+              <!-- Fields for Metered Service -->
+              <div class="meteredServiceFields" style="display: none">
+                <label for="previousReading">Số cũ:</label>
+                <input type="number" class="previousReading" name="previousReading" required />
+
+                <label for="currentReading">Số mới:</label>
+                <input type="number" class="currentReading" name="currentReading" required />
+
+                <label for="unitPriceMetered">Đơn giá:</label>
+                <input type="number" class="unitPriceMetered" name="unitPriceMetered" readonly />
+              </div>
+
+              <button type="button" onclick="removeService(this)">Xóa Dịch vụ</button>
+            </div>
+          </div>
+
+          <button type="button" id="addServiceBtn">Thêm Dịch vụ</button>
+
+          <button type="submit">Lưu Giao dịch</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      const buildingSelect = document.getElementById('buildingSelect');
+      const transactionTableBody = document.getElementById('transactionTableBody');
+      const modal = document.getElementById('transactionModal');
+      const addTransactionBtn = document.getElementById('addTransactionBtn');
+      const closeBtn = document.getElementsByClassName('close')[0];
+
+      // Mock data for transactions
+      const transactions = [
+        { id: 'GD001', tenant: 'Phòng 1', date: '01/01/2024', amount: 1000000, building: '01', isPaid: true },
+        { id: 'GD002', tenant: 'Phòng 2', date: '02/01/2024', amount: 1200000, building: '01', isPaid: false },
+        { id: 'GD003', tenant: 'Phòng 3', date: '03/01/2024', amount: 950000, building: '02', isPaid: true },
+      ];
+
+      function togglePaymentStatus(transactionId) {
+        const statusElement = document.getElementById(`status-${transactionId}`);
+        const isPaid = statusElement.classList.contains('paid');
+        
+        if (isPaid) {
+          statusElement.classList.remove('paid');
+          statusElement.classList.add('unpaid');
+          statusElement.textContent = 'Chưa thu';
+        } else {
+          statusElement.classList.remove('unpaid');
+          statusElement.classList.add('paid');
+          statusElement.textContent = 'Đã thu';
+        }
+        
+        console.log(`Updated payment status for transaction ${transactionId}: ${isPaid ? 'Chưa thu' : 'Đã thu'}`);
+      }
+
+      function populateTransactionTable(buildingId) {
+        const filteredTransactions = buildingId 
+          ? transactions.filter(t => t.building === buildingId)
+          : transactions;
+
+        transactionTableBody.innerHTML = filteredTransactions.map(transaction => `
+          <tr>
+            <td>${transaction.id}</td>
+            <td>${transaction.tenant}</td>
+            <td>${transaction.date}</td>
+            <td>${transaction.amount.toLocaleString()} VND</td>
+            <td>
+              <a href="chitietgiaodich.html?gd=${transaction.id}"><button>Xem chi tiết</button></a>
+              <button onclick="deleteTransaction('${transaction.id}')">Xóa</button>
+            </td>
+            <td>
+              <span id="status-${transaction.id}" class="status-toggle ${transaction.isPaid ? 'paid' : 'unpaid'}" 
+                    onclick="togglePaymentStatus('${transaction.id}')">
+                ${transaction.isPaid ? 'Đã thu' : 'Chưa thu'}
+              </span>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      buildingSelect.addEventListener('change', function() {
+        populateTransactionTable(this.value);
+      });
+
+      // Initial population of the table
+      populateTransactionTable('');
+
+      function deleteTransaction(id) {
+        console.log(`Deleting transaction ${id}`);
+        // Implement delete functionality
+      }
+
+      // Open modal
+      addTransactionBtn.onclick = function() {
+        modal.style.display = "block";
+      }
+
+      // Close modal
+      closeBtn.onclick = function() {
+        modal.style.display = "none";
+      }
+
+      // Close modal when clicking outside
+      window.onclick = function(event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      }
+
+      // Mock service details
+      const serviceDetails = {
+        'Tiền phòng': { type: 'fixed', price: 1000000 },
+        'Tiền điện': { type: 'metered', price: 3000 },
+        'Tiền nước': { type: 'metered', price: 15000 },
+        'Internet': { type: 'fixed', price: 200000 }
+      };
+
+      function updateServiceDetails(select) {
+        const service = serviceDetails[select.value];
+        const container = select.closest('.service');
+        const fixedFields = container.querySelector('.fixedServiceFields');
+        const meteredFields = container.querySelector('.meteredServiceFields');
+
+        if (service.type === 'fixed') {
+          fixedFields.style.display = 'block';
+          meteredFields.style.display = 'none';
+          container.querySelector('.unitPriceFixed').value = service.price;
+        } else {
+          fixedFields.style.display = 'none';
+          meteredFields.style.display = 'block';
+          container.querySelector('.unitPriceMetered').value = service.price;
+        }
+      }
+
+      function removeService(button) {
+        button.closest('.service').remove();
+      }
+
+      document.getElementById('addServiceBtn').addEventListener('click', function() {
+        const newService = document.querySelector('.service').cloneNode(true);
+        newService.querySelector('.serviceSelect').value = '';
+        newService.querySelector('.fixedServiceFields').style.display = 'none';
+        newService.querySelector('.meteredServiceFields').style.display = 'none';
+        document.getElementById('services').appendChild(newService);
+      });
+
+      function calculateMeteredTotal(container) {
+        const previous = parseInt(container.querySelector('.previousReading').value) || 0;
+        const current = parseInt(container.querySelector('.currentReading').value) || 0;
+        const price = parseInt(container.querySelector('.unitPriceMetered').value) || 0;
+        return (current - previous) * price;
+      }
+
+      document.getElementById("transactionForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        let totalAmount = 0;
+        const serviceContainers = document.querySelectorAll(".service");
+
+        serviceContainers.forEach(function(container) {
+          const serviceName = container.querySelector(".serviceSelect").value;
+          const serviceType = serviceDetails[serviceName].type;
+
+          if (serviceType === "fixed") {
+            const price = container.querySelector(".unitPriceFixed").value;
+            totalAmount += parseInt(price);
+          } else if (serviceType === "metered") {
+            totalAmount += calculateMeteredTotal(container);
+          }
+        });
+
+        const buildingId = document.getElementById("transactionBuilding").value;
+        const customerName = document.getElementById("customerName").value;
+        const transactionDate = document.getElementById("transactionDate").value;
+
+        document.getElementById("totalAmount").value = totalAmount;
+        
+        console.log(`New transaction added: Building ${buildingId}, Customer ${customerName}, Date ${transactionDate}, Total ${totalAmount} VND`);
+        
+        alert(`Giao dịch mới đã được thêm thành công với tổng giá trị: ${totalAmount} VND`);
+        modal.style.display = "none";  // Close the modal after saving
+        
+        // Refresh the transaction table
+        populateTransactionTable(buildingSelect.value);
+      });
+    </script>
+  </body>
+</html>
