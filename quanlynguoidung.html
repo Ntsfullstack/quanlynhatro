@@ -5,13 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quản lý Người dùng</title>
     <link rel="stylesheet" href="styles.css" />
+    <style>
+      .button-group {
+        margin-bottom: 20px;
+      }
+      .button-group button {
+        margin-right: 10px;
+      }
+    </style>
   </head>
   <body>
     <!-- Navbar -->
     <nav>
       <ul>
         <li><a href="/">Báo cáo thống kê</a></li>
-        <li><a href="./quanlynguoidung.html">Quản lý Người dùng</a></li>
+        <li><a href="./quanlynguoidung.html">Quản lý khách</a></li>
         <li><a href="./quanlynhatro.html">Quản lý Nhà trọ</a></li>
         <li><a href="./quanlygiaodich.html">Quản lý Giao dịch</a></li>
         <li><a href="./quanlydichvu.html">Quản lý Dịch vụ</a></li>
@@ -22,7 +30,10 @@
     <!-- Main Content -->
     <div class="container">
       <h1>Quản lý Người thuê trọ</h1>
-      <button>Thêm Người thuê mới</button>
+      <div class="button-group">
+        <button onclick="addNewTenant()">Thêm Người thuê mới</button>
+        <button onclick="exportReport()">Xuất báo cáo</button>
+      </div>
 
       <table>
         <thead>
@@ -42,8 +53,8 @@
             <td>0912345678</td>
             <td>Người thuê</td>
             <td>
-              <button>Sửa</button>
-              <button>Xóa</button>
+              <button onclick="editTenant(this)">Sửa</button>
+              <button onclick="deleteTenant(this)">Xóa</button>
             </td>
           </tr>
           <tr>
@@ -52,8 +63,8 @@
             <td>0987654321</td>
             <td>Người thuê</td>
             <td>
-              <button>Sửa</button>
-              <button>Xóa</button>
+              <button onclick="editTenant(this)">Sửa</button>
+              <button onclick="deleteTenant(this)">Xóa</button>
             </td>
           </tr>
           <tr>
@@ -62,12 +73,37 @@
             <td>0912987654</td>
             <td>Người thuê</td>
             <td>
-              <button>Sửa</button>
-              <button>Xóa</button>
+              <button onclick="editTenant(this)">Sửa</button>
+              <button onclick="deleteTenant(this)">Xóa</button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
+
+    <script>
+      function addNewTenant() {
+        alert("Chức năng thêm người thuê mới sẽ được triển khai ở đây.");
+      }
+
+      function editTenant(button) {
+        const row = button.closest('tr');
+        const name = row.cells[0].textContent;
+        alert(`Chức năng sửa thông tin của ${name} sẽ được triển khai ở đây.`);
+      }
+
+      function deleteTenant(button) {
+        const row = button.closest('tr');
+        const name = row.cells[0].textContent;
+        if (confirm(`Bạn có chắc chắn muốn xóa ${name} khỏi danh sách?`)) {
+          alert(`Đã xóa ${name} khỏi danh sách.`);
+          row.remove();
+        }
+      }
+
+      function exportReport() {
+        alert("Chức năng xuất báo cáo sẽ được triển khai ở đây.");
+      }
+    </script>
   </body>
 </html>
