@@ -1,351 +1,300 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Quản lý Giao dịch</title>
-    <link rel="stylesheet" href="styles.css" />
-    <style>
-      .status-toggle {
-        cursor: pointer;
-        padding: 5px 10px;
-        border-radius: 5px;
-      }
-      .paid {
-        background-color: #4CAF50;
-        color: white;
-      }
-      .unpaid {
-        background-color: #f44336;
-        color: white;
-      }
-      .modal {
-        display: none;
-        position: fixed;
-        z-index: 1;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0,0,0,0.4);
-      }
-      .modal-content {
-        background-color: #fefefe;
-        margin: 15% auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%;
-      }
-      .close {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-      }
-      .close:hover,
-      .close:focus {
-        color: black;
-        text-decoration: none;
-        cursor: pointer;
-      }
-      #roomSelect {
-        display: none; /* Hide room dropdown initially */
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Navbar -->
-    <nav>
-      <ul>
-        <li><a href="/">Báo cáo thống kê</a></li>
-        <li><a href="./quanlynguoidung.html">Quản lý khách</a></li>
-        <li><a href="./quanlynhatro.html">Quản lý Nhà trọ</a></li>
-        <li><a href="./quanlygiaodich.html">Quản lý Giao dịch</a></li>
-        <li><a href="./quanlydichvu.html">Quản lý Dịch vụ</a></li>
-        <li><a href="./quanlyhopdong.html">Quản lý Hợp đồng</a></li>
-      </ul>
-    </nav>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quản lý Giao dịch</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .status-toggle {
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+    .paid {
+      background-color: #4CAF50;
+      color: white;
+    }
+    .unpaid {
+      background-color: #f44336;
+      color: white;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    #roomSelect {
+      display: none; /* Hide room dropdown initially */
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav>
+    <ul>
+      <li><a href="/">Báo cáo thống kê</a></li>
+      <li><a href="./quanlynguoidung.html">Quản lý khách</a></li>
+      <li><a href="./quanlynhatro.html">Quản lý Nhà trọ</a></li>
+      <li><a href="./quanlygiaodich.html">Quản lý Giao dịch</a></li>
+      <li><a href="./quanlydichvu.html">Quản lý Dịch vụ</a></li>
+      <li><a href="./quanlyhopdong.html">Quản lý Hợp đồng</a></li>
+    </ul>
+  </nav>
 
-    <!-- Main Content -->
-    <div class="container">
-      <h1>Quản lý Giao dịch</h1>
+  <!-- Main Content -->
+  <div class="container">
+    <h1>Quản lý Giao dịch</h1>
 
-      <button id="addTransactionBtn">Thêm Giao dịch mới</button>
+    <!-- Nút thêm giao dịch sẽ được hiển thị sau khi chọn tòa nhà -->
+    <button id="addTransactionBtn" style="display: none;">Thêm Giao dịch mới</button>
 
-      <!-- Dropdown Tòa nhà -->
-      <select id="buildingSelect" class="building-dropdown">
-        <option value="">Tất cả tòa nhà</option>
-        <option value="01">Nhà trọ ABC</option>
-        <option value="02">Nhà trọ XYZ</option>
-      </select>
+    <!-- Dropdown Tòa nhà -->
+    <select id="buildingSelect" class="building-dropdown">
+      <option value="">Tất cả tòa nhà</option>
+      <option value="01">Nhà trọ ABC</option>
+      <option value="02">Nhà trọ XYZ</option>
+    </select>
 
-      <!-- Dropdown for Rooms -->
-      <select id="roomSelect" class="room-dropdown">
-        <option value="">Tất cả phòng</option>
-        <!-- Room options will be populated dynamically -->
-      </select>
+    <!-- Dropdown for Rooms -->
+    <select id="roomSelect" class="room-dropdown">
+      <option value="">Tất cả phòng</option>
+      <!-- Room options will be populated dynamically -->
+    </select>
 
-      <table id="transactionTable">
-        <thead>
-          <tr>
-            <th>Mã GD</th>
-            <th>Phòng</th>
-            <th>Ngày đóng tiền</th>
-            <th>Tổng số tiền</th>
-            <th>Chi tiết</th>
-            <th>Trạng thái</th>
-          </tr>
-        </thead>
-        <tbody id="transactionTableBody">
-          <!-- Data will be populated by JavaScript -->
-        </tbody>
-      </table>
+    <table id="transactionTable">
+      <thead>
+        <tr>
+          <th>Mã GD</th>
+          <th>Phòng</th>
+          <th>Ngày đóng tiền</th>
+          <th>Tổng số tiền</th>
+          <th>Chi tiết</th>
+          <th>Trạng thái</th>
+        </tr>
+      </thead>
+      <tbody id="transactionTableBody">
+        <!-- Data will be populated by JavaScript -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal Popup for Adding New Transaction -->
+  <div id="transactionModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Thêm Giao dịch mới</h2>
+      <form id="transactionForm">
+        <label for="transactionBuilding">Tòa nhà:</label>
+        <select id="transactionBuilding" name="transactionBuilding" required>
+          <option value="">Chọn tòa nhà</option>
+          <option value="01">Nhà trọ ABC</option>
+          <option value="02">Nhà trọ XYZ</option>
+        </select>
+
+        <label for="transactionRoom">Phòng:</label>
+        <select id="transactionRoom" name="transactionRoom" required>
+          <option value="">Chọn phòng</option>
+          <!-- Room options will be populated dynamically -->
+        </select>
+
+        <label for="transactionDate">Ngày Giao dịch:</label>
+        <input type="date" id="transactionDate" name="transactionDate" required />
+
+        <label for="totalAmount">Tổng số tiền:</label>
+        <input type="number" id="totalAmount" name="totalAmount" required />
+
+        <button type="submit">Lưu Giao dịch</button>
+      </form>
     </div>
+  </div>
 
-    <!-- Modal Popup for Adding New Transaction -->
-    <div id="transactionModal" class="modal">
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Thêm Giao dịch mới</h2>
+  <script>
+    const buildingSelect = document.getElementById('buildingSelect');
+    const roomSelect = document.getElementById('roomSelect');
+    const transactionTableBody = document.getElementById('transactionTableBody');
+    const addTransactionBtn = document.getElementById('addTransactionBtn');
+    const modal = document.getElementById('transactionModal');
+    const closeBtn = document.querySelector('.close');
 
-        <form id="transactionForm">
-          <label for="transactionBuilding">Tòa nhà:</label>
-          <select id="transactionBuilding" name="transactionBuilding" required>
-            <option value="">Chọn tòa nhà</option>
-            <option value="01">Nhà trọ ABC</option>
-            <option value="02">Nhà trọ XYZ</option>
-          </select>
+    // Mock data for rooms
+    const rooms = {
+      '01': ['Phòng 101', 'Phòng 102', 'Phòng 103'],
+      '02': ['Phòng 201', 'Phòng 202', 'Phòng 203']
+    };
 
-          <label for="transactionRoom">Phòng:</label>
-          <select id="transactionRoom" name="transactionRoom" required>
-            <option value="">Chọn phòng</option>
-            <!-- Room options will be populated dynamically -->
-          </select>
+    // Mock data for transactions
+    const transactions = [
+      { id: 1, room: 'Phòng 101', date: '2024-09-01', amount: 1000000, details: 'Tiền phòng', status: 'paid' },
+      { id: 2, room: 'Phòng 201', date: '2024-09-02', amount: 1200000, details: 'Tiền phòng', status: 'unpaid' },
+      // Add more mock transactions as needed
+    ];
 
-          <label for="transactionDate">Ngày Giao dịch:</label>
-          <input type="date" id="transactionDate" name="transactionDate" required />
-
-          <label for="totalAmount">Tổng số tiền:</label>
-          <input readonly type="number" id="totalAmount" name="totalAmount" />
-
-          <h3>Chi tiết Dịch vụ</h3>
-          <div id="services">
-            <div class="service">
-              <label for="serviceName">Tên Dịch vụ:</label>
-              <select name="serviceName" class="serviceSelect" onchange="updateServiceDetails(this)" required>
-                <option value="Tiền phòng" data-type="fixed">Tiền phòng (Cố định)</option>
-                <option value="Tiền điện" data-type="metered">Tiền điện (Tính theo số)</option>
-                <option value="Tiền nước" data-type="metered">Tiền nước (Tính theo số)</option>
-                <option value="Internet" data-type="fixed">Internet (Cố định)</option>
-              </select>
-
-              <!-- Fields for Fixed Service -->
-              <div class="fixedServiceFields">
-                <label for="unitPriceFixed">Đơn giá:</label>
-                <input type="number" class="unitPriceFixed" name="unitPriceFixed" readonly />
-              </div>
-
-              <!-- Fields for Metered Service -->
-              <div class="meteredServiceFields" style="display: none">
-                <label for="previousReading">Số cũ:</label>
-                <input type="number" class="previousReading" name="previousReading" required />
-
-                <label for="currentReading">Số mới:</label>
-                <input type="number" class="currentReading" name="currentReading" required />
-
-                <label for="unitPriceMetered">Đơn giá:</label>
-                <input type="number" class="unitPriceMetered" name="unitPriceMetered" readonly />
-              </div>
-
-              <button type="button" onclick="removeService(this)">Xóa Dịch vụ</button>
-            </div>
-          </div>
-
-          <button type="button" id="addServiceBtn">Thêm Dịch vụ</button>
-
-          <button type="submit">Lưu Giao dịch</button>
-        </form>
-      </div>
-    </div>
-
-    <script>
-      const buildingSelect = document.getElementById('buildingSelect');
-      const roomSelect = document.getElementById('roomSelect');
-      const transactionTableBody = document.getElementById('transactionTableBody');
-      const modal = document.getElementById('transactionModal');
-      const addTransactionBtn = document.getElementById('addTransactionBtn');
-      const closeBtn = document.getElementsByClassName('close')[0];
-    
-      // Mock data for transactions
-      const transactions = [
-        { id: 'GD001', room: 'Phòng 101', date: '01/01/2024', amount: 1000000, building: '01', isPaid: true },
-        { id: 'GD002', room: 'Phòng 102', date: '02/01/2024', amount: 1200000, building: '01', isPaid: false },
-        { id: 'GD003', room: 'Phòng 201', date: '03/01/2024', amount: 950000, building: '02', isPaid: true },
-      ];
-    
-      // Mock data for rooms
-      const rooms = {
-        '01': ['Phòng 101', 'Phòng 102', 'Phòng 103'],
-        '02': ['Phòng 201', 'Phòng 202', 'Phòng 203']
-      };
-    
-      function togglePaymentStatus(transactionId) {
-        const statusElement = document.getElementById(`status-${transactionId}`);
-        const isPaid = statusElement.classList.contains('paid');
-        
-        if (isPaid) {
-          statusElement.classList.remove('paid');
-          statusElement.classList.add('unpaid');
-          statusElement.textContent = 'Chưa thu';
-        } else {
-          statusElement.classList.remove('unpaid');
-          statusElement.classList.add('paid');
-          statusElement.textContent = 'Đã thu';
-        }
-        
-        console.log(`Updated payment status for transaction ${transactionId}: ${isPaid ? 'Chưa thu' : 'Đã thu'}`);
+    function populateRoomDropdown(buildingId) {
+      roomSelect.innerHTML = '<option value="">Chọn phòng</option>';  // Default option
+      if (buildingId && rooms[buildingId]) {
+        // Populate room dropdown based on selected building
+        rooms[buildingId].forEach(room => {
+          const option = document.createElement('option');
+          option.value = room;
+          option.textContent = room;
+          roomSelect.appendChild(option);
+        });
+        roomSelect.style.display = 'inline-block';  // Show room dropdown
+      } else {
+        roomSelect.style.display = 'none';  // Hide room dropdown if no building is selected
       }
-    
-      function populateRoomDropdown(buildingId) {
-        roomSelect.innerHTML = '<option value="">Tất cả phòng</option>';
-        if (buildingId && rooms[buildingId]) {
-          rooms[buildingId].forEach(room => {
-            const option = document.createElement('option');
-            option.value = room;
-            option.textContent = room;
-            roomSelect.appendChild(option);
-          });
-          roomSelect.style.display = 'inline-block';
-        } else {
-          roomSelect.style.display = 'none';
-        }
+    }
+
+    buildingSelect.addEventListener('change', function() {
+      const selectedBuilding = this.value;
+      populateRoomDropdown(selectedBuilding);  // Update rooms dropdown
+      populateTransactionTable(selectedBuilding, '');  // Filter transactions by selected building
+
+      // Hiển thị nút thêm giao dịch khi có tòa nhà được chọn
+      addTransactionBtn.style.display = selectedBuilding ? 'inline-block' : 'none';
+
+      // Reset and update the room selection in the modal form
+      const transactionRoomSelect = document.getElementById('transactionRoom');
+      transactionRoomSelect.innerHTML = '<option value="">Chọn phòng</option>';
+      if (selectedBuilding && rooms[selectedBuilding]) {
+        rooms[selectedBuilding].forEach(room => {
+          const option = document.createElement('option');
+          option.value = room;
+          option.textContent = room;
+          transactionRoomSelect.appendChild(option);
+        });
       }
-    
-      function populateTransactionTable(buildingId, roomId) {
-        let filteredTransactions = transactions;
-        
-        if (buildingId) {
-          filteredTransactions = filteredTransactions.filter(t => t.building === buildingId);
-        }
-        
-        if (roomId) {
-          filteredTransactions = filteredTransactions.filter(t => t.room === roomId);
-        }
-    
-        transactionTableBody.innerHTML = filteredTransactions.map(transaction => `
-          <tr>
+    });
+
+    roomSelect.addEventListener('change', function() {
+      const selectedBuilding = buildingSelect.value;
+      const selectedRoom = this.value;
+      populateTransactionTable(selectedBuilding, selectedRoom);
+    });
+
+    function populateTransactionTable(buildingId, roomId) {
+      transactionTableBody.innerHTML = ''; // Clear previous entries
+
+      // Filter transactions based on the selected building and room
+      transactions.forEach(transaction => {
+        const isBuildingMatch = buildingId === '' || (buildingId === '01' && transaction.room.startsWith('Phòng 101')) || 
+                                (buildingId === '02' && transaction.room.startsWith('Phòng 201'));
+        const isRoomMatch = roomId === '' || transaction.room === roomId;
+
+        if (isBuildingMatch && isRoomMatch) {
+          const row = document.createElement('tr');
+          row.innerHTML = `
             <td>${transaction.id}</td>
             <td>${transaction.room}</td>
             <td>${transaction.date}</td>
-            <td>${transaction.amount.toLocaleString()} VND</td>
+            <td>${transaction.amount}</td>
             <td>
-              <a href="chitietgiaodich.html?gd=${transaction.id}"><button>Xem chi tiết</button></a>
-              <button onclick="deleteTransaction('${transaction.id}')">Xóa</button>
+              <button class="view-detail-btn" data-id="${transaction.id}">Xem Chi tiết</button>
+              <button class="delete-btn" data-id="${transaction.id}">Xóa</button>
             </td>
             <td>
-              <span id="status-${transaction.id}" class="status-toggle ${transaction.isPaid ? 'paid' : 'unpaid'}" 
-                    onclick="togglePaymentStatus('${transaction.id}')">
-                ${transaction.isPaid ? 'Đã thu' : 'Chưa thu'}
-              </span>
+              <button class="status-toggle ${transaction.status}" data-id="${transaction.id}">${transaction.status === 'paid' ? 'Đã thu' : 'Chưa thu'}</button>
             </td>
-          </tr>
-        `).join('');
-      }
-    
-      buildingSelect.addEventListener('change', function() {
-        const selectedBuilding = this.value;
-        populateRoomDropdown(selectedBuilding);
-        populateTransactionTable(selectedBuilding, '');
-    
-        // Update the building selection in the modal form
-        document.getElementById('transactionBuilding').value = selectedBuilding;
-        // Reset and update the room selection in the modal form
-        const transactionRoomSelect = document.getElementById('transactionRoom');
-        transactionRoomSelect.innerHTML = '<option value="">Chọn phòng</option>';
-        if (selectedBuilding && rooms[selectedBuilding]) {
-          rooms[selectedBuilding].forEach(room => {
-            const option = document.createElement('option');
-            option.value = room;
-            option.textContent = room;
-            transactionRoomSelect.appendChild(option);
-          });
+          `;
+          transactionTableBody.appendChild(row);
         }
       });
-    
-      roomSelect.addEventListener('change', function() {
-        const selectedBuilding = buildingSelect.value;
-        const selectedRoom = this.value;
-        populateTransactionTable(selectedBuilding, selectedRoom);
-    
-        // Update the room selection in the modal form
-        document.getElementById('transactionRoom').value = selectedRoom;
+
+      // Thêm sự kiện cho các nút "Xem Chi tiết" và "Xóa"
+      document.querySelectorAll('.view-detail-btn').forEach(button => {
+        button.addEventListener('click', function() {
+          const transactionId = this.getAttribute('data-id');
+          alert(`Xem chi tiết giao dịch ${transactionId}`);
+          // Thực hiện hành động cần thiết để xem chi tiết
+        });
       });
-    
-      // Initial population of the table
-      populateTransactionTable('', '');
-    
-      function deleteTransaction(id) {
-        console.log(`Deleting transaction ${id}`);
-        // Implement delete functionality
-      }
-    
-      // Open modal
-      addTransactionBtn.onclick = function() {
-        modal.style.display = "block";
-      }
-    
-      // Close modal
-      closeBtn.onclick = function() {
+
+      document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function() {
+          const transactionId = this.getAttribute('data-id');
+          if (confirm(`Bạn có chắc chắn muốn xóa giao dịch ${transactionId}?`)) {
+            // Xóa giao dịch khỏi danh sách
+            const index = transactions.findIndex(t => t.id == transactionId);
+            if (index > -1) {
+              transactions.splice(index, 1);
+              populateTransactionTable(buildingId, roomId); // Cập nhật lại bảng giao dịch
+            }
+          }
+        });
+      });
+
+      // Thêm sự kiện cho nút "Thay đổi trạng thái"
+      document.querySelectorAll('.status-toggle').forEach(button => {
+        button.addEventListener('click', function() {
+          const transactionId = this.getAttribute('data-id');
+          const transaction = transactions.find(t => t.id == transactionId);
+          if (transaction) {
+            transaction.status = transaction.status === 'paid' ? 'unpaid' : 'paid'; // Chuyển đổi trạng thái
+            populateTransactionTable(buildingId, roomId); // Cập nhật lại bảng giao dịch
+          }
+        });
+      });
+    }
+
+    // Open modal
+    addTransactionBtn.onclick = function() {
+      modal.style.display = "block";
+    }
+
+    // Close modal
+    closeBtn.onclick = function() {
+      modal.style.display = "none";
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      if (event.target == modal) {
         modal.style.display = "none";
       }
-    
-      // Close modal when clicking outside
-      window.onclick = function(event) {
-        if (event.target == modal) {
-          modal.style.display = "none";
-        }
-      }
-    
-      // Mock service details
-      const serviceDetails = {
-        'Tiền phòng': { type: 'fixed', price: 1000000 },
-        'Tiền điện': { type: 'metered', price: 3000 },
-        'Tiền nước': { type: 'metered', price: 15000 },
-        'Internet': { type: 'fixed', price: 200000 }
-      };
-    
-      function updateServiceDetails(select) {
-        const service = serviceDetails[select.value];
-        const container = select.closest('.service');
-        const fixedFields = container.querySelector('.fixedServiceFields');
-        const meteredFields = container.querySelector('.meteredServiceFields');
-    
-        if (service.type === 'fixed') {
-          fixedFields.style.display = 'block';
-          meteredFields.style.display = 'none';
-          container.querySelector('.unitPriceFixed').value = service.price;
-        } else {
-          fixedFields.style.display = 'none';
-          meteredFields.style.display = 'block';
-          container.querySelector('.unitPriceMetered').value = service.price;
-        }
-      }
-    
-      function removeService(button) {
-        button.closest('.service').remove();
-      }
-    
-    document.getElementById ('addServiceBtn').onclick = function() {
-      const services = document.getElementById('services');
-      const newService = document.querySelector('.service').cloneNode(true);
-      newService.querySelector('.serviceSelect').value = '';
-      newService.querySelector('.unitPriceFixed').value = '';
-      newService.querySelector('.previousReading').value = '';
-      newService.querySelector('.currentReading').value = '';
-      newService.querySelector('.unitPriceMetered').value = '';
-      services.appendChild(newService);
     }
-    </script>
-  </body>
+
+    // Handle form submission for adding a new transaction
+    document.getElementById('transactionForm').onsubmit = function(event) {
+      event.preventDefault();
+      const newTransaction = {
+        id: transactions.length + 1, // Tạo mã GD mới
+        room: document.getElementById('transactionRoom').value,
+        date: document.getElementById('transactionDate').value,
+        amount: parseInt(document.getElementById('totalAmount').value),
+        details: 'Tiền phòng',
+        status: 'unpaid' // Mặc định là chưa thu
+      };
+      transactions.push(newTransaction); // Thêm giao dịch mới vào danh sách
+      populateTransactionTable(buildingSelect.value, roomSelect.value); // Cập nhật bảng giao dịch
+      modal.style.display = "none"; // Đóng modal
+      this.reset(); // Reset form
+    }
+  </script>
+</body>
 </html>
