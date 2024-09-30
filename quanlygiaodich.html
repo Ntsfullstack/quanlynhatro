@@ -49,6 +49,9 @@
         text-decoration: none;
         cursor: pointer;
       }
+      #roomSelect {
+        display: none; /* Hide room dropdown initially */
+      }
     </style>
   </head>
   <body>
@@ -67,13 +70,20 @@
     <!-- Main Content -->
     <div class="container">
       <h1>Quản lý Giao dịch</h1>
+
       <button id="addTransactionBtn">Thêm Giao dịch mới</button>
 
       <!-- Dropdown Tòa nhà -->
       <select id="buildingSelect" class="building-dropdown">
-        <option value="">Chọn tòa nhà</option>
+        <option value="">Tất cả tòa nhà</option>
         <option value="01">Nhà trọ ABC</option>
         <option value="02">Nhà trọ XYZ</option>
+      </select>
+
+      <!-- Dropdown for Rooms -->
+      <select id="roomSelect" class="room-dropdown">
+        <option value="">Tất cả phòng</option>
+        <!-- Room options will be populated dynamically -->
       </select>
 
       <table id="transactionTable">
@@ -107,8 +117,11 @@
             <option value="02">Nhà trọ XYZ</option>
           </select>
 
-          <label for="customerName">Tên Người Thuê:</label>
-          <input type="text" id="customerName" name="customerName" required />
+          <label for="transactionRoom">Phòng:</label>
+          <select id="transactionRoom" name="transactionRoom" required>
+            <option value="">Chọn phòng</option>
+            <!-- Room options will be populated dynamically -->
+          </select>
 
           <label for="transactionDate">Ngày Giao dịch:</label>
           <input type="date" id="transactionDate" name="transactionDate" required />
@@ -158,18 +171,25 @@
 
     <script>
       const buildingSelect = document.getElementById('buildingSelect');
+      const roomSelect = document.getElementById('roomSelect');
       const transactionTableBody = document.getElementById('transactionTableBody');
       const modal = document.getElementById('transactionModal');
       const addTransactionBtn = document.getElementById('addTransactionBtn');
       const closeBtn = document.getElementsByClassName('close')[0];
-
+    
       // Mock data for transactions
       const transactions = [
-        { id: 'GD001', tenant: 'Phòng 1', date: '01/01/2024', amount: 1000000, building: '01', isPaid: true },
-        { id: 'GD002', tenant: 'Phòng 2', date: '02/01/2024', amount: 1200000, building: '01', isPaid: false },
-        { id: 'GD003', tenant: 'Phòng 3', date: '03/01/2024', amount: 950000, building: '02', isPaid: true },
+        { id: 'GD001', room: 'Phòng 101', date: '01/01/2024', amount: 1000000, building: '01', isPaid: true },
+        { id: 'GD002', room: 'Phòng 102', date: '02/01/2024', amount: 1200000, building: '01', isPaid: false },
+        { id: 'GD003', room: 'Phòng 201', date: '03/01/2024', amount: 950000, building: '02', isPaid: true },
       ];
-
+    
+      // Mock data for rooms
+      const rooms = {
+        '01': ['Phòng 101', 'Phòng 102', 'Phòng 103'],
+        '02': ['Phòng 201', 'Phòng 202', 'Phòng 203']
+      };
+    
       function togglePaymentStatus(transactionId) {
         const statusElement = document.getElementById(`status-${transactionId}`);
         const isPaid = statusElement.classList.contains('paid');
@@ -186,16 +206,37 @@
         
         console.log(`Updated payment status for transaction ${transactionId}: ${isPaid ? 'Chưa thu' : 'Đã thu'}`);
       }
-
-      function populateTransactionTable(buildingId) {
-        const filteredTransactions = buildingId 
-          ? transactions.filter(t => t.building === buildingId)
-          : transactions;
-
+    
+      function populateRoomDropdown(buildingId) {
+        roomSelect.innerHTML = '<option value="">Tất cả phòng</option>';
+        if (buildingId && rooms[buildingId]) {
+          rooms[buildingId].forEach(room => {
+            const option = document.createElement('option');
+            option.value = room;
+            option.textContent = room;
+            roomSelect.appendChild(option);
+          });
+          roomSelect.style.display = 'inline-block';
+        } else {
+          roomSelect.style.display = 'none';
+        }
+      }
+    
+      function populateTransactionTable(buildingId, roomId) {
+        let filteredTransactions = transactions;
+        
+        if (buildingId) {
+          filteredTransactions = filteredTransactions.filter(t => t.building === buildingId);
+        }
+        
+        if (roomId) {
+          filteredTransactions = filteredTransactions.filter(t => t.room === roomId);
+        }
+    
         transactionTableBody.innerHTML = filteredTransactions.map(transaction => `
           <tr>
             <td>${transaction.id}</td>
-            <td>${transaction.tenant}</td>
+            <td>${transaction.room}</td>
             <td>${transaction.date}</td>
             <td>${transaction.amount.toLocaleString()} VND</td>
             <td>
@@ -211,36 +252,61 @@
           </tr>
         `).join('');
       }
-
+    
       buildingSelect.addEventListener('change', function() {
-        populateTransactionTable(this.value);
+        const selectedBuilding = this.value;
+        populateRoomDropdown(selectedBuilding);
+        populateTransactionTable(selectedBuilding, '');
+    
+        // Update the building selection in the modal form
+        document.getElementById('transactionBuilding').value = selectedBuilding;
+        // Reset and update the room selection in the modal form
+        const transactionRoomSelect = document.getElementById('transactionRoom');
+        transactionRoomSelect.innerHTML = '<option value="">Chọn phòng</option>';
+        if (selectedBuilding && rooms[selectedBuilding]) {
+          rooms[selectedBuilding].forEach(room => {
+            const option = document.createElement('option');
+            option.value = room;
+            option.textContent = room;
+            transactionRoomSelect.appendChild(option);
+          });
+        }
       });
-
+    
+      roomSelect.addEventListener('change', function() {
+        const selectedBuilding = buildingSelect.value;
+        const selectedRoom = this.value;
+        populateTransactionTable(selectedBuilding, selectedRoom);
+    
+        // Update the room selection in the modal form
+        document.getElementById('transactionRoom').value = selectedRoom;
+      });
+    
       // Initial population of the table
-      populateTransactionTable('');
-
+      populateTransactionTable('', '');
+    
       function deleteTransaction(id) {
         console.log(`Deleting transaction ${id}`);
         // Implement delete functionality
       }
-
+    
       // Open modal
       addTransactionBtn.onclick = function() {
         modal.style.display = "block";
       }
-
+    
       // Close modal
       closeBtn.onclick = function() {
         modal.style.display = "none";
       }
-
+    
       // Close modal when clicking outside
       window.onclick = function(event) {
         if (event.target == modal) {
           modal.style.display = "none";
         }
       }
-
+    
       // Mock service details
       const serviceDetails = {
         'Tiền phòng': { type: 'fixed', price: 1000000 },
@@ -248,13 +314,13 @@
         'Tiền nước': { type: 'metered', price: 15000 },
         'Internet': { type: 'fixed', price: 200000 }
       };
-
+    
       function updateServiceDetails(select) {
         const service = serviceDetails[select.value];
         const container = select.closest('.service');
         const fixedFields = container.querySelector('.fixedServiceFields');
         const meteredFields = container.querySelector('.meteredServiceFields');
-
+    
         if (service.type === 'fixed') {
           fixedFields.style.display = 'block';
           meteredFields.style.display = 'none';
@@ -265,58 +331,21 @@
           container.querySelector('.unitPriceMetered').value = service.price;
         }
       }
-
+    
       function removeService(button) {
         button.closest('.service').remove();
       }
-
-      document.getElementById('addServiceBtn').addEventListener('click', function() {
-        const newService = document.querySelector('.service').cloneNode(true);
-        newService.querySelector('.serviceSelect').value = '';
-        newService.querySelector('.fixedServiceFields').style.display = 'none';
-        newService.querySelector('.meteredServiceFields').style.display = 'none';
-        document.getElementById('services').appendChild(newService);
-      });
-
-      function calculateMeteredTotal(container) {
-        const previous = parseInt(container.querySelector('.previousReading').value) || 0;
-        const current = parseInt(container.querySelector('.currentReading').value) || 0;
-        const price = parseInt(container.querySelector('.unitPriceMetered').value) || 0;
-        return (current - previous) * price;
-      }
-
-      document.getElementById("transactionForm").addEventListener("submit", function(event) {
-        event.preventDefault();
-
-        let totalAmount = 0;
-        const serviceContainers = document.querySelectorAll(".service");
-
-        serviceContainers.forEach(function(container) {
-          const serviceName = container.querySelector(".serviceSelect").value;
-          const serviceType = serviceDetails[serviceName].type;
-
-          if (serviceType === "fixed") {
-            const price = container.querySelector(".unitPriceFixed").value;
-            totalAmount += parseInt(price);
-          } else if (serviceType === "metered") {
-            totalAmount += calculateMeteredTotal(container);
-          }
-        });
-
-        const buildingId = document.getElementById("transactionBuilding").value;
-        const customerName = document.getElementById("customerName").value;
-        const transactionDate = document.getElementById("transactionDate").value;
-
-        document.getElementById("totalAmount").value = totalAmount;
-        
-        console.log(`New transaction added: Building ${buildingId}, Customer ${customerName}, Date ${transactionDate}, Total ${totalAmount} VND`);
-        
-        alert(`Giao dịch mới đã được thêm thành công với tổng giá trị: ${totalAmount} VND`);
-        modal.style.display = "none";  // Close the modal after saving
-        
-        // Refresh the transaction table
-        populateTransactionTable(buildingSelect.value);
-      });
+    
+    document.getElementById ('addServiceBtn').onclick = function() {
+      const services = document.getElementById('services');
+      const newService = document.querySelector('.service').cloneNode(true);
+      newService.querySelector('.serviceSelect').value = '';
+      newService.querySelector('.unitPriceFixed').value = '';
+      newService.querySelector('.previousReading').value = '';
+      newService.querySelector('.currentReading').value = '';
+      newService.querySelector('.unitPriceMetered').value = '';
+      services.appendChild(newService);
+    }
     </script>
   </body>
 </html>

@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chi tiết Giao dịch</title>
     <link rel="stylesheet" href="styles.css" />
-
   </head>
   <body>
     <!-- Navbar -->
@@ -22,13 +21,9 @@
 
     <!-- Main Content -->
     <div class="container">
-      <h1>Chi tiết Giao dịch - Mã GD001</h1>
-      <select id="buildingSelect">
-        <option value="abc">Nhà trọ ABC</option>
-        <option value="xyz">Nhà trọ XYZ</option>
-      </select>
-      <button onclick="addServiceDetail()">Thêm Chi tiết Dịch vụ</button>
+      <h1>Chi tiết Giao dịch - Mã GD003</h1>
 
+      <button onclick="addServiceDetail()">Thêm Chi tiết Dịch vụ</button>
       <table id="serviceTable">
         <thead>
           <tr>
@@ -50,27 +45,25 @@
     </div>
 
     <script>
-      const buildingSelect = document.getElementById('buildingSelect');
+      const transactionId = 'GD003'; // This is where we set the transaction ID
       const serviceTableBody = document.getElementById('serviceTableBody');
       const totalAmountElement = document.getElementById('totalAmount');
 
-      const servicesData = {
-        abc: [
-          { name: 'Tiền phòng', quantity: '1 tháng', unitPrice: 1000000, total: 1000000 },
-          { name: 'Tiền điện', quantity: '100 kWh', unitPrice: 3000, total: 300000 },
-          { name: 'Tiền nước', quantity: '10 m³', unitPrice: 10000, total: 100000 }
-        ],
-        xyz: [
-          { name: 'Tiền phòng', quantity: '1 tháng', unitPrice: 1200000, total: 1200000 },
-          { name: 'Tiền điện', quantity: '120 kWh', unitPrice: 3000, total: 360000 },
-          { name: 'Tiền nước', quantity: '12 m³', unitPrice: 10000, total: 120000 },
-          { name: 'Tiền Internet', quantity: '1 tháng', unitPrice: 200000, total: 200000 }
-        ]
-      };
+      // Default services data
+      let servicesData = [
+        { name: 'Tiền phòng', quantity: '1 tháng', unitPrice: 1000000, total: 1000000 },
+        { name: 'Tiền điện', quantity: '100 kWh', unitPrice: 3000, total: 300000 },
+        { name: 'Tiền nước', quantity: '10 m³', unitPrice: 10000, total: 100000 }
+      ];
 
-      function updateTable(building) {
-        const services = servicesData[building];
-        serviceTableBody.innerHTML = services.map(service => `
+      // If the transaction ID is GD003, add the Internet service
+      if (transactionId === 'GD003') {
+        servicesData.push({ name: 'Tiền Internet', quantity: '1 tháng', unitPrice: 200000, total: 200000 });
+      }
+
+      function updateTable() {
+        // Populate the table with services data
+        serviceTableBody.innerHTML = servicesData.map(service => `
           <tr>
             <td>${service.name}</td>
             <td>${service.quantity}</td>
@@ -83,13 +76,10 @@
           </tr>
         `).join('');
 
-        const total = services.reduce((sum, service) => sum + service.total, 0);
+        // Calculate the total amount
+        const total = servicesData.reduce((sum, service) => sum + service.total, 0);
         totalAmountElement.textContent = `Tổng số tiền: ${total.toLocaleString()} VND`;
       }
-
-      buildingSelect.addEventListener('change', function() {
-        updateTable(this.value);
-      });
 
       function addServiceDetail() {
         alert('Chức năng thêm chi tiết dịch vụ sẽ được triển khai ở đây.');
@@ -119,8 +109,8 @@
         totalAmountElement.textContent = `Tổng số tiền: ${total.toLocaleString()} VND`;
       }
 
-      // Initialize the table with the first building
-      updateTable(buildingSelect.value);
+      // Initialize the table with the services for the transaction ID
+      updateTable();
     </script>
   </body>
 </html>
