@@ -5,6 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chi tiết Giao dịch</title>
     <link rel="stylesheet" href="styles.css" />
+    <style>
+      .container {
+        padding: 20px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      .total {
+        margin-top: 20px;
+        text-align: right;
+      }
+      button {
+        margin: 5px;
+      }
+    </style>
   </head>
   <body>
     <!-- Navbar -->
@@ -15,16 +40,20 @@
         <li><a href="./quanlynhatro.html">Quản lý Nhà trọ</a></li>
         <li><a href="./quanlygiaodich.html">Quản lý Giao dịch</a></li>
         <li><a href="./quanlydichvu.html">Quản lý Dịch vụ</a></li>
-        <li><a href="./quanlyhopdong.html"> Quản lý hợp đồng</a></li>
+        <li><a href="./quanlyhopdong.html">Quản lý hợp đồng</a></li>
       </ul>
     </nav>
 
     <!-- Main Content -->
     <div class="container">
       <h1>Chi tiết Giao dịch - Mã GD001</h1>
-      <button>Thêm Chi tiết Dịch vụ</button>
+      <select id="buildingSelect">
+        <option value="abc">Nhà trọ ABC</option>
+        <option value="xyz">Nhà trọ XYZ</option>
+      </select>
+      <button onclick="addServiceDetail()">Thêm Chi tiết Dịch vụ</button>
 
-      <table>
+      <table id="serviceTable">
         <thead>
           <tr>
             <th>Tên dịch vụ</th>
@@ -34,44 +63,88 @@
             <th>Chức năng</th>
           </tr>
         </thead>
-        <tbody>
-          <!-- Mockup Data -->
-          <tr>
-            <td>Tiền phòng</td>
-            <td>1 tháng</td>
-            <td>1,000,000</td>
-            <td>1,000,000</td>
-            <td>
-              <button>Sửa</button>
-              <button>Xóa</button>
-            </td>
-          </tr>
-          <tr>
-            <td>Tiền điện</td>
-            <td>100 kWh</td>
-            <td>3,000</td>
-            <td>300,000</td>
-            <td>
-              <button>Sửa</button>
-              <button>Xóa</button>
-            </td>
-          </tr>
-          <tr>
-            <td>Tiền nước</td>
-            <td>10 m³</td>
-            <td>10,000</td>
-            <td>100,000</td>
-            <td>
-              <button>Sửa</button>
-              <button>Xóa</button>
-            </td>
-          </tr>
+        <tbody id="serviceTableBody">
+          <!-- Data will be populated by JavaScript -->
         </tbody>
       </table>
 
       <div class="total">
-        <h3>Tổng số tiền: 1,400,000 VND</h3>
+        <h3 id="totalAmount">Tổng số tiền: 0 VND</h3>
       </div>
     </div>
+
+    <script>
+      const buildingSelect = document.getElementById('buildingSelect');
+      const serviceTableBody = document.getElementById('serviceTableBody');
+      const totalAmountElement = document.getElementById('totalAmount');
+
+      const servicesData = {
+        abc: [
+          { name: 'Tiền phòng', quantity: '1 tháng', unitPrice: 1000000, total: 1000000 },
+          { name: 'Tiền điện', quantity: '100 kWh', unitPrice: 3000, total: 300000 },
+          { name: 'Tiền nước', quantity: '10 m³', unitPrice: 10000, total: 100000 }
+        ],
+        xyz: [
+          { name: 'Tiền phòng', quantity: '1 tháng', unitPrice: 1200000, total: 1200000 },
+          { name: 'Tiền điện', quantity: '120 kWh', unitPrice: 3000, total: 360000 },
+          { name: 'Tiền nước', quantity: '12 m³', unitPrice: 10000, total: 120000 },
+          { name: 'Tiền Internet', quantity: '1 tháng', unitPrice: 200000, total: 200000 }
+        ]
+      };
+
+      function updateTable(building) {
+        const services = servicesData[building];
+        serviceTableBody.innerHTML = services.map(service => `
+          <tr>
+            <td>${service.name}</td>
+            <td>${service.quantity}</td>
+            <td>${service.unitPrice.toLocaleString()}</td>
+            <td>${service.total.toLocaleString()}</td>
+            <td>
+              <button onclick="editService(this)">Sửa</button>
+              <button onclick="deleteService(this)">Xóa</button>
+            </td>
+          </tr>
+        `).join('');
+
+        const total = services.reduce((sum, service) => sum + service.total, 0);
+        totalAmountElement.textContent = `Tổng số tiền: ${total.toLocaleString()} VND`;
+      }
+
+      buildingSelect.addEventListener('change', function() {
+        updateTable(this.value);
+      });
+
+      function addServiceDetail() {
+        alert('Chức năng thêm chi tiết dịch vụ sẽ được triển khai ở đây.');
+      }
+
+      function editService(button) {
+        const row = button.closest('tr');
+        const serviceName = row.cells[0].textContent;
+        alert(`Chức năng sửa dịch vụ ${serviceName} sẽ được triển khai ở đây.`);
+      }
+
+      function deleteService(button) {
+        const row = button.closest('tr');
+        const serviceName = row.cells[0].textContent;
+        if (confirm(`Bạn có chắc chắn muốn xóa dịch vụ ${serviceName}?`)) {
+          row.remove();
+          updateTotal();
+        }
+      }
+
+      function updateTotal() {
+        const rows = serviceTableBody.querySelectorAll('tr');
+        let total = 0;
+        rows.forEach(row => {
+          total += parseInt(row.cells[3].textContent.replace(/,/g, ''));
+        });
+        totalAmountElement.textContent = `Tổng số tiền: ${total.toLocaleString()} VND`;
+      }
+
+      // Initialize the table with the first building
+      updateTable(buildingSelect.value);
+    </script>
   </body>
 </html>
