@@ -21,7 +21,7 @@
 
     <!-- Main Content -->
     <div class="container">
-      <h1>Chi tiết Giao dịch - Mã GD003</h1>
+      <h1>Chi tiết Giao dịch</h1>
 
       <button onclick="addServiceDetail()">Thêm Chi tiết Dịch vụ</button>
       <table id="serviceTable">
@@ -45,24 +45,28 @@
     </div>
 
     <script>
-      const transactionId = 'GD003'; // This is where we set the transaction ID
+      function getUrlParameter(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+      }
+    
+      const transactionId = getUrlParameter('id');
       const serviceTableBody = document.getElementById('serviceTableBody');
       const totalAmountElement = document.getElementById('totalAmount');
-
-      // Default services data
+    
+      // Default services data (You can modify this to get data dynamically based on transactionId)
       let servicesData = [
         { name: 'Tiền phòng', quantity: '1 tháng', unitPrice: 1000000, total: 1000000 },
         { name: 'Tiền điện', quantity: '100 kWh', unitPrice: 3000, total: 300000 },
         { name: 'Tiền nước', quantity: '10 m³', unitPrice: 10000, total: 100000 }
       ];
-
-      // If the transaction ID is GD003, add the Internet service
-      if (transactionId === 'GD003') {
+    
+      // Example of adding Internet service based on transaction ID
+      if (transactionId === '2') {
         servicesData.push({ name: 'Tiền Internet', quantity: '1 tháng', unitPrice: 200000, total: 200000 });
       }
-
+    
       function updateTable() {
-        // Populate the table with services data
         serviceTableBody.innerHTML = servicesData.map(service => `
           <tr>
             <td>${service.name}</td>
@@ -75,22 +79,21 @@
             </td>
           </tr>
         `).join('');
-
-        // Calculate the total amount
+    
         const total = servicesData.reduce((sum, service) => sum + service.total, 0);
         totalAmountElement.textContent = `Tổng số tiền: ${total.toLocaleString()} VND`;
       }
-
+    
       function addServiceDetail() {
         alert('Chức năng thêm chi tiết dịch vụ sẽ được triển khai ở đây.');
       }
-
+    
       function editService(button) {
         const row = button.closest('tr');
         const serviceName = row.cells[0].textContent;
         alert(`Chức năng sửa dịch vụ ${serviceName} sẽ được triển khai ở đây.`);
       }
-
+    
       function deleteService(button) {
         const row = button.closest('tr');
         const serviceName = row.cells[0].textContent;
@@ -99,7 +102,7 @@
           updateTotal();
         }
       }
-
+    
       function updateTotal() {
         const rows = serviceTableBody.querySelectorAll('tr');
         let total = 0;
@@ -108,9 +111,10 @@
         });
         totalAmountElement.textContent = `Tổng số tiền: ${total.toLocaleString()} VND`;
       }
-
+    
       // Initialize the table with the services for the transaction ID
       updateTable();
     </script>
+    
   </body>
 </html>

@@ -199,68 +199,62 @@
     });
 
     function populateTransactionTable(buildingId, roomId) {
-      transactionTableBody.innerHTML = ''; // Clear previous entries
+  transactionTableBody.innerHTML = ''; // Clear previous entries
 
-      // Filter transactions based on the selected building and room
-      transactions.forEach(transaction => {
-        const isBuildingMatch = buildingId === '' || (buildingId === '01' && transaction.room.startsWith('Phòng 101')) || 
-                                (buildingId === '02' && transaction.room.startsWith('Phòng 201'));
-        const isRoomMatch = roomId === '' || transaction.room === roomId;
+  // Filter transactions based on the selected building and room
+  transactions.forEach(transaction => {
+    const isBuildingMatch = buildingId === '' || (buildingId === '01' && transaction.room.startsWith('Phòng 101')) || 
+                            (buildingId === '02' && transaction.room.startsWith('Phòng 201'));
+    const isRoomMatch = roomId === '' || transaction.room === roomId;
 
-        if (isBuildingMatch && isRoomMatch) {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${transaction.id}</td>
-            <td>${transaction.room}</td>
-            <td>${transaction.date}</td>
-            <td>${transaction.amount}</td>
-            <td>
-              <button class="view-detail-btn" data-id="${transaction.id}">Xem Chi tiết</button>
-              <button class="delete-btn" data-id="${transaction.id}">Xóa</button>
-            </td>
-            <td>
-              <button class="status-toggle ${transaction.status}" data-id="${transaction.id}">${transaction.status === 'paid' ? 'Đã thu' : 'Chưa thu'}</button>
-            </td>
-          `;
-          transactionTableBody.appendChild(row);
-        }
-      });
+    if (isBuildingMatch && isRoomMatch) {
+      const row = document.createElement('tr');
+row.innerHTML = `
+  <td>${transaction.id}</td>
+  <td>${transaction.room}</td>
+  <td>${transaction.date}</td>
+  <td>${transaction.amount}</td>
+  <td>
+    <a href="chitietgiaodich.html?id=${transaction.id}">Xem Chi tiết</a> 
+    <button class="delete-btn" data-id="${transaction.id}">Xóa</button>
+  </td>
+  <td>
+    <button class="status-toggle ${transaction.status}" data-id="${transaction.id}">${transaction.status === 'paid' ? 'Đã thu' : 'Chưa thu'}</button>
+  </td>
+`;
 
-      // Thêm sự kiện cho các nút "Xem Chi tiết" và "Xóa"
-      document.querySelectorAll('.view-detail-btn').forEach(button => {
-        button.addEventListener('click', function() {
-          const transactionId = this.getAttribute('data-id');
-          alert(`Xem chi tiết giao dịch ${transactionId}`);
-          // Thực hiện hành động cần thiết để xem chi tiết
-        });
-      });
-
-      document.querySelectorAll('.delete-btn').forEach(button => {
-        button.addEventListener('click', function() {
-          const transactionId = this.getAttribute('data-id');
-          if (confirm(`Bạn có chắc chắn muốn xóa giao dịch ${transactionId}?`)) {
-            // Xóa giao dịch khỏi danh sách
-            const index = transactions.findIndex(t => t.id == transactionId);
-            if (index > -1) {
-              transactions.splice(index, 1);
-              populateTransactionTable(buildingId, roomId); // Cập nhật lại bảng giao dịch
-            }
-          }
-        });
-      });
-
-      // Thêm sự kiện cho nút "Thay đổi trạng thái"
-      document.querySelectorAll('.status-toggle').forEach(button => {
-        button.addEventListener('click', function() {
-          const transactionId = this.getAttribute('data-id');
-          const transaction = transactions.find(t => t.id == transactionId);
-          if (transaction) {
-            transaction.status = transaction.status === 'paid' ? 'unpaid' : 'paid'; // Chuyển đổi trạng thái
-            populateTransactionTable(buildingId, roomId); // Cập nhật lại bảng giao dịch
-          }
-        });
-      });
+      transactionTableBody.appendChild(row);
     }
+  });
+
+  // Xử lý sự kiện cho nút "Xóa"
+  document.querySelectorAll('.delete-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      const transactionId = this.getAttribute('data-id');
+      if (confirm(`Bạn có chắc chắn muốn xóa giao dịch ${transactionId}?`)) {
+        // Xóa giao dịch khỏi danh sách
+        const index = transactions.findIndex(t => t.id == transactionId);
+        if (index > -1) {
+          transactions.splice(index, 1);
+          populateTransactionTable(buildingId, roomId); // Cập nhật lại bảng giao dịch
+        }
+      }
+    });
+  });
+
+  // Xử lý sự kiện cho nút "Thay đổi trạng thái"
+  document.querySelectorAll('.status-toggle').forEach(button => {
+    button.addEventListener('click', function() {
+      const transactionId = this.getAttribute('data-id');
+      const transaction = transactions.find(t => t.id == transactionId);
+      if (transaction) {
+        transaction.status = transaction.status === 'paid' ? 'unpaid' : 'paid'; // Chuyển đổi trạng thái
+        populateTransactionTable(buildingId, roomId); // Cập nhật lại bảng giao dịch
+      }
+    });
+  });
+}
+
 
     // Open modal
     addTransactionBtn.onclick = function() {
