@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -22,16 +22,17 @@
     <!-- Main Content -->
     <div class="container">
       <h1>Quản lý Phòng trọ</h1>
-      <button>Thêm Phòng trọ mới</button>
+      <button class="add-button">Thêm Phòng trọ mới</button>
 
       <table>
         <thead>
           <tr>
             <th>Số phòng</th>
             <th>Diện tích (m2)</th>
-            <th>Cửa sổ</th>
-            <th>Bếp</th>
+            <th>Giá thuê</th>
+            <th>Số người tối đa</th>
             <th>Trạng thái</th>
+            <th>Ngày hết hạn hợp đồng</th>
             <th>Chức năng</th>
           </tr>
         </thead>
@@ -39,23 +40,25 @@
           <tr>
             <td>PT001</td>
             <td>20</td>
-            <td>Có</td>
-            <td>Có</td>
+            <td>3,000,000 VND</td>
+            <td>2</td>
             <td>Trống</td>
+            <td>N/A</td>
             <td>
-              <button>Sửa</button>
-              <button>Xóa</button>
+              <button class="edit-button">Sửa</button>
+              <button class="delete-button">Xóa</button>
             </td>
           </tr>
           <tr>
             <td>PT002</td>
             <td>15</td>
-            <td>Không</td>
-            <td>Có</td>
+            <td>2,500,000 VND</td>
+            <td>1</td>
             <td>Đã thuê</td>
+            <td>30/06/2024</td>
             <td>
-              <button>Sửa</button>
-              <button>Xóa</button>
+              <button class="edit-button">Sửa</button>
+              <button class="delete-button">Xóa</button>
             </td>
           </tr>
         </tbody>

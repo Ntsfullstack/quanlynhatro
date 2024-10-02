@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Quản lý khách</title>
+    <title>Quản lý khách hàng</title>
     <link rel="stylesheet" href="styles.css" />
     <style>
       .button-group {
@@ -11,6 +11,18 @@
       }
       .button-group button {
         margin-right: 10px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
       }
     </style>
   </head>
@@ -26,85 +38,91 @@
         <li><a href="./quanlyhopdong.html">Quản lý Hợp đồng</a></li>
       </ul>
     </nav>
-
+    
     <!-- Main Content -->
     <div class="container">
-      <h1>Quản lý Người thuê trọ</h1>
+      <h1>Quản lý khách hàng</h1>
       <div class="button-group">
-        <button onclick="addNewTenant()">Thêm Người thuê mới</button>
+        <button onclick="addNewCustomer()">Thêm khách hàng mới</button>
         <button onclick="exportReport()">Xuất báo cáo</button>
       </div>
-
+      
       <table>
         <thead>
           <tr>
-            <th>Tên đầy đủ</th>
+            <th>ID khách hàng</th>
+            <th>Họ tên</th>
+            <th>Giới tính</th>
+            <th>Ngày Sinh</th>
+            <th>SĐT</th>
             <th>Email</th>
-            <th>Số điện thoại</th>
-            <th>Toà nhà</th>
-            <th>Phòng</th>
+            <th>CCCD</th>
+            <th>Địa chỉ thường trú</th>
+            <th>Nhà thuê</th>
+            <th>Phòng thuê</th>
             <th>Chức năng</th>
           </tr>
         </thead>
         <tbody>
           <!-- Mockup Data -->
           <tr>
+            <td>KH001</td>
             <td>Nguyễn Văn A</td>
-            <td>nva@example.com</td>
+            <td>Nam</td>
+            <td>01/01/1990</td>
             <td>0912345678</td>
-            <td>ABC</td>
+            <td>nva@example.com</td>
+            <td>123456789012</td>
+            <td>123 Đường ABC, Quận 1, TP.HCM</td>
+            <td>Nhà A</td>
             <td>101</td>
             <td>
-              <button onclick="editTenant(this)">Sửa</button>
-              <button onclick="deleteTenant(this)">Xóa</button>
+              <button onclick="editCustomer(this)">Sửa</button>
+              <button onclick="deleteCustomer(this)">Xóa</button>
             </td>
           </tr>
           <tr>
+            <td>KH002</td>
             <td>Trần Thị B</td>
-            <td>ttb@example.com</td>
+            <td>Nữ</td>
+            <td>15/05/1995</td>
             <td>0987654321</td>
-            <td>XYZ</td>
+            <td>ttb@example.com</td>
+            <td>234567890123</td>
+            <td>456 Đường XYZ, Quận 2, TP.HCM</td>
+            <td>Nhà B</td>
             <td>201</td>
             <td>
-              <button onclick="editTenant(this)">Sửa</button>
-              <button onclick="deleteTenant(this)">Xóa</button>
-            </td>
-          </tr>
-          <tr>
-            <td>Lê Văn C</td>
-            <td>lvc@example.com</td>
-            <td>0912987654</td>
-            <td>ABC</td>
-            <td>102</td>
-            <td>
-              <button onclick="editTenant(this)">Sửa</button>
-              <button onclick="deleteTenant(this)">Xóa</button>
+              <button onclick="editCustomer(this)">Sửa</button>
+              <button onclick="deleteCustomer(this)">Xóa</button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-
+    
     <script>
-      function addNewTenant() {
-        alert("Chức năng thêm người thuê mới sẽ được triển khai ở đây.");
+      function addNewCustomer() {
+        alert("Chức năng thêm khách hàng mới sẽ được triển khai ở đây.");
       }
-
-      function editTenant(button) {
+      
+      function editCustomer(button) {
         const row = button.closest('tr');
-        const name = row.cells[0].textContent;
-        alert(`Chức năng sửa thông tin của ${name} sẽ được triển khai ở đây.`);
+        const id = row.cells[0].textContent;
+        const name = row.cells[1].textContent;
+        alert(`Chức năng sửa thông tin của khách hàng ${name} (ID: ${id}) sẽ được triển khai ở đây.`);
       }
-
-      function deleteTenant(button) {
+      
+      function deleteCustomer(button) {
         const row = button.closest('tr');
-        const name = row.cells[0].textContent;
-        if (confirm(`Bạn có chắc chắn muốn xóa ${name} khỏi danh sách?`)) {
-          alert(`Đã xóa ${name} khỏi danh sách.`);
+        const id = row.cells[0].textContent;
+        const name = row.cells[1].textContent;
+        if (confirm(`Bạn có chắc chắn muốn xóa khách hàng ${name} (ID: ${id}) khỏi danh sách?`)) {
+          alert(`Đã xóa khách hàng ${name} (ID: ${id}) khỏi danh sách.`);
           row.remove();
         }
       }
-
+      
       function exportReport() {
         alert("Chức năng xuất báo cáo sẽ được triển khai ở đây.");
       }

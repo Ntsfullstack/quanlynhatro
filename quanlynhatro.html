@@ -5,6 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quản lý Nhà trọ</title>
     <link rel="stylesheet" href="styles.css" />
+    <style>
+      .container {
+        padding: 20px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      button {
+        margin: 5px;
+        padding: 5px 10px;
+      }
+    </style>
   </head>
   <body>
     <!-- Navbar -->
@@ -22,43 +44,69 @@
     <!-- Main Content -->
     <div class="container">
       <h1>Quản lý Nhà trọ</h1>
-      <button>Thêm Nhà trọ mới</button>
+      <button onclick="addNewBoardingHouse()">Thêm Nhà trọ mới</button>
       
       <table>
         <thead>
           <tr>
-            <th>Mã nhà trọ</th>
-            <th>Tên nhà trọ</th>
-            <th>Địa chỉ</th>
-            <th>Sức chứa</th>
+            <th>ID nhà trọ</th>
+            <th>Tên nhà</th>
+            <th>Địa chỉ nhà</th>
+            <th>Tổng số phòng</th>
+            <th>Phòng còn trống</th>
             <th>Chức năng</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>01</td>
+            <td>NT001</td>
             <td>Nhà trọ ABC</td>
-            <td>123 Lê Lợi</td>
+            <td>123 Lê Lợi, Quận 1, TP.HCM</td>
             <td>50</td>
+            <td>5</td>
             <td>
-              <a href="./quanlyphongtro.html"><button>Xem</button></a>
-              <button>Sửa</button>
-              <button>Xóa</button>
+              <button ><a href="./quanlyphongtro.html">Xem</a></button>
+              <button onclick="editBoardingHouse('NT001')">Sửa</button>
+              <button onclick="deleteBoardingHouse('NT001')">Xóa</button>
             </td>
           </tr>
           <tr>
-            <td>02</td>
+            <td>NT002</td>
             <td>Nhà trọ XYZ</td>
-            <td>456 Hai Bà Trưng</td>
+            <td>456 Hai Bà Trưng, Quận 3, TP.HCM</td>
             <td>30</td>
+            <td>2</td>
             <td>
-              <a href="./quanlyphongtro.html"><button>Xem</button></a>
-              <button>Sửa</button>
-              <button>Xóa</button>
+              <button onclick="viewBoardingHouse('NT002')">Xem</button>
+              <button onclick="editBoardingHouse('NT002')">Sửa</button>
+              <button onclick="deleteBoardingHouse('NT002')">Xóa</button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
+
+    <script>
+      function addNewBoardingHouse() {
+        alert("Chức năng thêm nhà trọ mới sẽ được triển khai ở đây.");
+      }
+
+      function viewBoardingHouse(id) {
+        alert(`Xem chi tiết nhà trọ có ID: ${id}`);
+        // Chuyển hướng đến trang quản lý phòng trọ với ID nhà trọ tương ứng
+        // window.location.href = `./quanlyphongtro.html?id=${id}`;
+      }
+
+      function editBoardingHouse(id) {
+        alert(`Sửa thông tin nhà trọ có ID: ${id}`);
+      }
+
+      function deleteBoardingHouse(id) {
+        if (confirm(`Bạn có chắc chắn muốn xóa nhà trọ có ID: ${id}?`)) {
+          alert(`Đã xóa nhà trọ có ID: ${id}`);
+          // Xóa hàng tương ứng khỏi bảng
+        }
+      }
+    </script>
   </body>
 </html>
